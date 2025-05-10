@@ -1,0 +1,18 @@
+# Ensure consistent line endings
+* text=auto
+
+# Treat all JS/TS/HTML/CSS files as UTF-8
+*.js text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.jsx text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.scss text eol=lf
+
+# Handle image binaries properly
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
