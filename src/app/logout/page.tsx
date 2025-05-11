@@ -12,7 +12,9 @@ export default function LogoutPage() {
   useEffect(() => {
     const signOut = async () => {
       await supabase.auth.signOut()
-      router.push('/login')
+      setTimeout(() => {
+        router.push('/login')
+      }, 300) // slight delay for UX
     }
 
     signOut()

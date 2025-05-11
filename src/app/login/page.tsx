@@ -4,7 +4,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
-import { Loader2, LogIn, UserPlus } from 'lucide-react'
+import { Loader2, LogIn, UserPlus, Facebook } from 'lucide-react'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -15,10 +15,15 @@ export default function LoginPage() {
   const [errorMsg, setErrorMsg] = useState('')
 
   const handleSubmit = async () => {
-    setLoading(true)
     setErrorMsg('')
+    if (!email || !password) {
+      setErrorMsg('Email and password are required.')
+      return
+    }
 
+    setLoading(true)
     let response
+
     if (isSignUp) {
       response = await supabase.auth.signUp({ email, password })
     } else {
@@ -82,17 +87,15 @@ export default function LoginPage() {
           {isSignUp ? 'Sign Up' : 'Login'}
         </button>
 
-        <div className="text-center text-sm text-gray-500">or</div>
-
         <button
           onClick={handleFacebookLogin}
-          disabled={loading}
-          className="w-full border p-2 rounded text-sm"
+          className="w-full bg-blue-500 text-white p-2 rounded flex justify-center items-center gap-2 hover:bg-blue-600"
         >
+          <Facebook className="w-4 h-4" />
           Continue with Facebook
         </button>
 
-        <p className="text-center text-sm text-gray-500">
+        <p className="text-center text-sm">
           {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
           <button
             onClick={() => setIsSignUp(!isSignUp)}
