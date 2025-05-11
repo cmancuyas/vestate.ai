@@ -3,7 +3,7 @@
 
 import { useState } from 'react'
 import { Loader2 } from 'lucide-react'
-import { useCreateListingStore } from '@/store/useCreateSaleListingStore'
+import { useCreateListingStore } from '@/store/useCreateListingStore'
 
 const requiredDocs = [
   { key: 'agreement', label: 'Agreement of Purchase and Sale/Lease' },

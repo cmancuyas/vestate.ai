@@ -1,7 +1,7 @@
 // src/components/forms/DealDetailsForm.tsx
 'use client'
 
-import { useCreateListingStore } from '@/store/useCreateSaleListingStore'
+import { useCreateListingStore } from '@/store/useCreateListingStore'
 
 export default function DealDetailsForm() {
   const {
