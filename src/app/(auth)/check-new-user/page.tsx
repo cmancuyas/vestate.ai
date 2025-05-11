@@ -5,31 +5,39 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
 
-export default function CheckNewUserPage() {
+export default function CheckNewUser() {
   const router = useRouter()
 
   useEffect(() => {
-    const checkUser = async () => {
-      const { data, error } = await supabase.auth.getUser()
-
-      if (error || !data.user) {
+    const handleRedirect = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
         router.push('/login')
         return
       }
 
-      const { created_at } = data.user
-      const lastSignedIn = data.user.last_sign_in_at
+      // Check if profile exists
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', user.id)
+        .single()
 
-      // If they signed up just now → go to onboarding
-      if (created_at === lastSignedIn) {
+      if (error || !data) {
+        // First-time user → onboarding
         router.push('/auth/onboarding')
       } else {
+        // Returning user → dashboard
         router.push('/auth/dashboard')
       }
     }
 
-    checkUser()
+    handleRedirect()
   }, [router])
 
-  return <p className="p-6 text-gray-500">Redirecting...</p>
+  return (
+    <div className="p-6 text-center">
+      Redirecting...
+    </div>
+  )
 }
