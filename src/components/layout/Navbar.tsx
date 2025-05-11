@@ -2,25 +2,48 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 import { useRouter } from 'next/navigation'
+import { ChevronDown } from 'lucide-react'
 
 export default function Navbar() {
-  const [email, setEmail] = useState<string | null>(null)
+  const [fullName, setFullName] = useState<string | null>(null)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement | null>(null)
   const router = useRouter()
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const { data, error } = await supabase.auth.getUser()
-      if (error) {
-        console.error('Error fetching user:', error.message)
-        return
+    const fetchProfile = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+
+      if (!user) return
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', user.id)
+        .single()
+
+      if (!error && data) {
+        setFullName(data.full_name)
       }
-      setEmail(data.user?.email ?? null)
     }
 
-    fetchUser()
+    fetchProfile()
+  }, [])
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
   const handleLogout = async () => {
@@ -30,18 +53,35 @@ export default function Navbar() {
 
   return (
     <header className="bg-white shadow px-4 py-3 flex items-center justify-between">
-      <Link href="/dashboard" className="text-lg font-bold text-blue-600">
+      <Link href="/auth/dashboard" className="text-lg font-bold text-blue-600">
         Vestate.ai
       </Link>
 
-      <div className="flex items-center gap-4 text-sm text-gray-700">
-        {email && <span className="hidden sm:inline">Welcome, {email}</span>}
+      <div className="relative" ref={menuRef}>
         <button
-          onClick={handleLogout}
-          className="text-red-600 hover:underline transition duration-150 ease-in-out"
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="flex items-center gap-2 text-sm text-gray-700 hover:underline"
         >
-          Logout
+          {fullName || 'User'}
+          <ChevronDown size={16} />
         </button>
+
+        {menuOpen && (
+          <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-md z-50">
+            <Link
+              href="/auth/profile"
+              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            >
+              Edit Profile
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+            >
+              Logout
+            </button>
+          </div>
+        )}
       </div>
     </header>
   )

@@ -40,14 +40,19 @@ export default function LoginPage() {
     }
   }
 
-  const handleFacebookLogin = async () => {
-    await supabase.auth.signInWithOAuth({
-      provider: 'facebook',
-      options: {
-        redirectTo: 'https://vestate-ai.vercel.app/dashboard'
-      }
-    })
+const handleFacebookLogin = async () => {
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'facebook',
+    options: {
+      redirectTo: `${window.location.origin}/auth/check-new-user`
+    }
+  })
+
+  if (error) {
+    console.error('OAuth login error:', error)
   }
+}
+
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
