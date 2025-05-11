@@ -6,7 +6,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
 import { Loader2 } from 'lucide-react'
 import SaleListingTabs from '@/components/forms/SaleListingTabs'
-import { useCreateListingStore } from '@/store/useCreateListingStore'
+import { useCreateListingStore } from '@/store/useCreateSaleListingStore'
 
 export default function EditListingPage() {
   const { id } = useParams()

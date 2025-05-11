@@ -11,12 +11,16 @@ export default function Navbar() {
   const router = useRouter()
 
   useEffect(() => {
-    const getUser = async () => {
-      const { data } = await supabase.auth.getUser()
+    const fetchUser = async () => {
+      const { data, error } = await supabase.auth.getUser()
+      if (error) {
+        console.error('Error fetching user:', error.message)
+        return
+      }
       setEmail(data.user?.email ?? null)
     }
 
-    getUser()
+    fetchUser()
   }, [])
 
   const handleLogout = async () => {
@@ -34,7 +38,7 @@ export default function Navbar() {
         {email && <span className="hidden sm:inline">Welcome, {email}</span>}
         <button
           onClick={handleLogout}
-          className="text-red-600 hover:underline"
+          className="text-red-600 hover:underline transition duration-150 ease-in-out"
         >
           Logout
         </button>
