@@ -43,9 +43,9 @@ export default function LoginPage() {
   const handleFacebookLogin = async () => {
     await supabase.auth.signInWithOAuth({
       provider: 'facebook',
-      options: {
-        redirectTo: `${window.location.origin}/dashboard`
-      }
+      // options: {
+      //   redirectTo: `${window.location.origin}/dashboard`
+      // }
     })
   }
 
