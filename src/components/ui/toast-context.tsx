@@ -2,6 +2,7 @@
 'use client'
 
 import * as React from 'react'
+import { JSX } from 'react'
 
 type ToastVariant = 'default' | 'success' | 'error' | 'warning' | 'info'
 
