@@ -1,5 +1,7 @@
-// src/app/legal/privacy/page.tsx
 'use client'
+export const dynamic = 'force-dynamic'
+
+// src/app/legal/privacy/page.tsx
 
 export default function PrivacyPolicyPage() {
   return (

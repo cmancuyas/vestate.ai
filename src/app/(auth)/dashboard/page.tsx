@@ -1,6 +1,9 @@
 // src/app/(auth)/dashboard/page.tsx
 "use client";
 
+export const dynamic = 'force-dynamic'
+
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "@supabase/auth-helpers-react";

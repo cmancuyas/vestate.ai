@@ -1,93 +1,168 @@
-// src/app/dashboard/listings/[id]/page.tsx
+// src/app/(auth)/dashboard/listings/page.tsx
 'use client'
+export const dynamic = 'force-dynamic'
 
-import { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { supabase } from '@/lib/supabaseClient'
-import { Loader2 } from 'lucide-react'
+import { useToast } from '@/components/ui/toast-context'
 
-export default function ListingDetailPage() {
-  const { id } = useParams()
-  const [listing, setListing] = useState<any>(null)
-  const [documents, setDocuments] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
+import QRCode from 'react-qr-code'
+
+import { useRealtimeListings } from '@/hooks/useRealtimeListings'
+
+const PAGE_SIZE = 10
+
+export default function ListingsPage() {
+  const { toast } = useToast();
+  const [showQR, setShowQR] = useState<string | null>(null)
+  const [listings, setListings] = useState<any[]>([])
+  const [loading, setLoading] = useState(false)
+  const [hasMore, setHasMore] = useState(true)
+  const [category, setCategory] = useState('')
+  const observer = useRef<IntersectionObserver | null>(null)
+  const lastRef = useRef<HTMLLIElement | null>(null)
+  const pageRef = useRef(0)
+
+  const fetchListings = useCallback(async (reset = false) => {
+    setLoading(true)
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user) return
+
+    const query = supabase
+      .from('listings')
+      .select('*')
+      .eq('user_id', user.id)
+      .range(reset ? 0 : pageRef.current * PAGE_SIZE, (pageRef.current + 1) * PAGE_SIZE - 1)
+
+    if (category) query.eq('category', category)
+
+    const { data, error } = await query
+
+    if (error) {
+      console.error('Error fetching listings', error)
+    } else {
+      setListings(prev => (reset ? data : [...prev, ...data]))
+      setHasMore(data.length === PAGE_SIZE)
+      if (!reset) pageRef.current++
+      else pageRef.current = 1
+    }
+    setLoading(false)
+  }, [category])
 
   useEffect(() => {
-    if (!id) return
+    fetchListings(true)
+  }, [category])
 
-    const fetchListing = async () => {
-      // Fetch listing
-      const { data: listingData, error: listingError } = await supabase
-        .from('sale_listings')
-        .select('*')
-        .eq('id', id)
-        .single()
+  useRealtimeListings(() => fetchListings(true))
 
-      // Fetch related documents
-      const { data: docData, error: docError } = await supabase
-        .from('listing_documents')
-        .select('*')
-        .eq('listing_id', id)
+  useEffect(() => {
+    if (observer.current) observer.current.disconnect()
 
-      setListing(listingData)
-      setDocuments(docData || [])
-      setLoading(false)
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore && !loading) {
+        fetchListings()
+      }
+    })
+
+    if (lastRef.current) {
+      observer.current.observe(lastRef.current)
     }
-
-    fetchListing()
-  }, [id])
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
-      </div>
-    )
-  }
-
-  if (!listing) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-red-600 text-sm">Listing not found.</p>
-      </div>
-    )
-  }
+  }, [fetchListings, hasMore, loading])
 
   return (
-    <main className="min-h-screen bg-gray-100 p-6">
-      <div className="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow space-y-6">
-        <h1 className="text-2xl font-bold text-blue-600">Listing Details</h1>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">My Listings (Live + Infinite Scroll)</h1>
 
-        <div className="space-y-2 text-sm text-gray-800">
-          <div><strong>Property Address:</strong> {listing.address}</div>
-          <div><strong>Buyer Name:</strong> {listing.buyer_name}</div>
-          <div><strong>Seller Name:</strong> {listing.seller_name}</div>
-          <div><strong>Seller Agent:</strong> {listing.seller_agent}</div>
-          <div><strong>Final Price:</strong> ₱ {Number(listing.final_price).toLocaleString()}</div>
-          <div><strong>Closing Date:</strong> {new Date(listing.closing_date).toLocaleDateString()}</div>
-          <div><strong>Commission:</strong> {listing.commission}%</div>
-        </div>
+      <select
+        value={category}
+        onChange={e => setCategory(e.target.value)}
+        className="p-2 border rounded mb-4"
+      >
+        <option value="">All Categories</option>
+        <option value="residential">Residential</option>
+        <option value="commercial">Commercial</option>
+        <option value="foreclosed">Foreclosed</option>
+        <option value="under_construction">Under Construction</option>
+      </select>
 
-        {documents.length > 0 && (
-          <div className="mt-4">
-            <h2 className="text-lg font-semibold text-gray-700 mb-2">Uploaded Documents</h2>
-            <ul className="list-disc pl-5 text-sm text-blue-600">
-              {documents.map((doc) => (
-                <li key={doc.id}>
-                  <a
-                    href={`https://wpdiadtykxjdmlzzcspr.supabase.co/storage/v1/object/public/listing-documents/${doc.file_key}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:underline"
-                  >
-                    {doc.label || doc.file_key}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
-    </main>
+      <ul className="space-y-4">
+        {listings.map((listing, idx) => (
+          <li
+            key={listing.id}
+            ref={idx === listings.length - 1 ? lastRef : null}
+            className="p-4 border rounded bg-white dark:bg-gray-800"
+          >
+            <h2 className="font-semibold text-blue-600 dark:text-blue-300">{listing.title}</h2>
+            <p className="text-sm text-gray-700 dark:text-gray-300">₱ {listing.price}</p>
+            <p className="text-xs text-gray-500">{listing.category}</p>
+
+    <div className="flex justify-end space-x-2 mt-2">
+      <button
+        onClick={() => window.location.href = `/dashboard/listings/${listing.id}/edit`}
+        className="text-blue-600 hover:underline"
+      >
+        Edit
+      </button>
+      <button
+        onClick={() => {
+          if (confirm('Are you sure you want to delete this listing?')) {
+            supabase
+              .from('listings')
+              .delete()
+              .eq('id', listing.id)
+              .then(({ error }) => {
+                if (error) {
+                  toast({ title: 'Failed to delete listing', variant: 'error' })
+                } else {
+                  toast({ title: 'Listing deleted', variant: 'success' })
+                  setListings(prev => prev.filter(l => l.id !== listing.id))
+                }
+              })
+          }
+        }}
+        className="text-red-600 hover:underline"
+      >
+        Delete
+      </button>
+    </div>
+
+  <div className="flex justify-end gap-2 mt-2 text-xs text-right">
+    {listing.is_public && (
+      <>
+        <button
+          onClick={() => {
+            navigator.clipboard.writeText(`${window.location.origin}/listings/${listing.id}`)
+            toast({ title: 'Link copied', description: 'Listing link copied to clipboard.', variant: 'info' })
+          }}
+          className="text-blue-600 hover:underline"
+        >
+          Copy Link
+        </button>
+        <button
+          onClick={() => {
+            setShowQR(showQR === listing.id ? null : listing.id)
+          }}
+          className="text-purple-600 hover:underline"
+        >
+          {showQR === listing.id ? 'Hide QR' : 'Show QR'}
+        </button>
+      </>
+    )}
+  </div>
+  {showQR === listing.id && (
+    <div className="flex justify-center mt-2">
+      <QRCode value={`${window.location.origin}/listings/${listing.id}`} size={128} />
+    </div>
+  )}
+</li>
+        ))}
+      </ul>
+
+      {loading && <p className="text-gray-500 mt-4">Loading more...</p>}
+      {!hasMore && !loading && <p className="text-gray-400 mt-4">End of results</p>}
+    </div>
   )
 }

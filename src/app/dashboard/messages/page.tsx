@@ -1,5 +1,7 @@
-// src/app/dashboard/messages/page.tsx
 'use client'
+export const dynamic = 'force-dynamic'
+
+// src/app/dashboard/messages/page.tsx
 
 import ProtectedRoute from '@/components/auth/ProtectedRoute'
 import { useEffect, useState } from 'react'

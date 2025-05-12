@@ -1,8 +1,8 @@
+import { Toaster } from '@/components/ui/toaster'
 import './globals.css'
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { DarkModeProvider } from '@/context/DarkModelContext'
-import { Toaster } from '@/components/ui/toaster'
 import { ToastProvider } from '@/components/ui/toast-context'
 
 const geistSans = Geist({
@@ -33,7 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <meta name="twitter:card" content="summary_large_image" />
           <link rel="icon" href="/favicon.ico" />
         </head>
-    
+
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <DarkModeProvider>
           <ToastProvider>

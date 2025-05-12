@@ -1,13 +1,16 @@
+// src/app/listings/map/page.tsx
 'use client'
-import dynamic from 'next/dynamic'
+export const dynamic = 'force-dynamic'
+
+import nextDynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 
 // Leaflet must be dynamically imported
-const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { ssr: false })
-const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLayer), { ssr: false })
-const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { ssr: false })
-const Popup = dynamic(() => import('react-leaflet').then(mod => mod.Popup), { ssr: false })
+const MapContainer = nextDynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { ssr: false })
+const TileLayer = nextDynamic(() => import('react-leaflet').then(mod => mod.TileLayer), { ssr: false })
+const Marker = nextDynamic(() => import('react-leaflet').then(mod => mod.Marker), { ssr: false })
+const Popup = nextDynamic(() => import('react-leaflet').then(mod => mod.Popup), { ssr: false })
 import 'leaflet/dist/leaflet.css'
 
 export default function ListingMapPage() {

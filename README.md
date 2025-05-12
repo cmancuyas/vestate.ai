@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Vestate.ai – Real Estate Intelligence Platform
 
-## Getting Started
+Modern, full-stack real estate dashboard built with:
+- **Next.js App Router**
+- **Supabase** (auth, storage, realtime)
+- **Stripe** (billing)
+- **Tailwind CSS**
+- **Zod, React Hook Form, Lucide Icons**
 
-First, run the development server:
+---
+
+## 🚀 Features
+
+- 🔐 Auth & RBAC (`admin`, `agent`, `pro`)
+- 🏠 Listings CRUD with images & location
+- 📡 Supabase Realtime (live updates)
+- 📸 QR Code & Shareable Links
+- 🎨 Responsive Dashboard (dark/light)
+- 🧼 Soft-delete with media cleanup
+- 🔍 Public Listing Pages with SEO
+- 📦 Stripe-based Freemium Support
+- 🧠 Listing Limit for Free Users
+- 📈 Admin Panel with Restore/Delete
+- 🌍 Sitemap, robots.txt, JSON-LD, OG Tags
+
+---
+
+## ⚙️ Setup
+
+### 1. Clone this repo
+
+```bash
+git clone https://github.com/your-org/vestate.ai.git
+cd vestate.ai
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Create `.env.local` from the example
+
+```bash
+cp .env.example .env.local
+```
+
+> 🔐 Fill in real keys from Supabase, Stripe, Google, reCAPTCHA
+
+---
+
+## 🧪 Development
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🏗️ Production
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 👥 Team Onboarding
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Access shared Supabase project at [supabase.io](https://supabase.io)
+- Join Slack for dev discussions
+- Branch from `main` and use PRs for feature work
+- All team members must configure `.env.local` from the example
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 📄 License
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT – © Vestate.ai 2025

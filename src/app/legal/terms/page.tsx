@@ -1,5 +1,7 @@
-// src/app/legal/terms/page.tsx
 'use client'
+export const dynamic = 'force-dynamic'
+
+// src/app/legal/terms/page.tsx
 
 export default function TermsOfServicePage() {
   return (

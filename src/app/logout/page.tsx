@@ -1,5 +1,7 @@
-// src/app/logout/page.tsx
 'use client'
+export const dynamic = 'force-dynamic'
+
+// src/app/logout/page.tsx
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'

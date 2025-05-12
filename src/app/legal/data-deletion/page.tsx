@@ -1,5 +1,7 @@
-// src/app/legal/data-deletion/page.tsx
 'use client'
+export const dynamic = 'force-dynamic'
+
+// src/app/legal/data-deletion/page.tsx
 
 export default function DataDeletionPage() {
   return (

@@ -1,4 +1,6 @@
 'use client'
+export const dynamic = 'force-dynamic'
+
 import { useEffect, useState } from 'react'
 import { Bar } from 'react-chartjs-2'
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend } from 'chart.js'
@@ -14,9 +16,9 @@ export default function AnalyticsDashboard() {
     const fetchAnalytics = async () => {
       const { data: listings } = await supabase.from('listings').select('*')
 
-      const categoryMap = {}
-      const priceMap = {}
-      const countMap = {}
+      const categoryMap: Record<string, number> = {}
+      const priceMap: Record<string, number> = {}
+      const countMap: Record<string, number> = {}
 
       listings?.forEach(listing => {
         const cat = listing.category || 'uncategorized'
@@ -25,7 +27,7 @@ export default function AnalyticsDashboard() {
         countMap[cat] = (countMap[cat] || 0) + 1
       })
 
-      const avgMap = {}
+      const avgMap: Record<string, number> = {}
       for (const cat in priceMap) {
         avgMap[cat] = priceMap[cat] / countMap[cat]
       }

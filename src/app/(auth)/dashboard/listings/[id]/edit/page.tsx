@@ -1,5 +1,7 @@
-// src/app/dashboard/listings/[id]/edit/page.tsx
 'use client'
+export const dynamic = 'force-dynamic'
+
+// src/app/dashboard/listings/[id]/edit/page.tsx
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'

@@ -8,7 +8,7 @@ export default function FavoriteButton({ listingId }: { listingId: string }) {
   const [favorited, setFavorited] = useState(false)
 
   useEffect(() => {
-    (async () => {
+    const checkFavorite = async () => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
       setUserId(user.id)
