@@ -13,17 +13,17 @@ export default function MessagesForm() {
   const [loading, setLoading] = useState(false)
 
   // Fetch existing messages
+  const fetchMessages = async () => {
+    const { data, error } = await supabase
+      .from('listing_messages')
+      .select('*')
+      .eq('listing_id', MOCK_LISTING_ID)
+      .order('created_at', { ascending: true })
+
+    if (data) setMessages(data)
+  }
+
   useEffect(() => {
-    const fetchMessages = async () => {
-      const { data, error } = await supabase
-        .from('listing_messages')
-        .select('*')
-        .eq('listing_id', MOCK_LISTING_ID)
-        .order('created_at', { ascending: true })
-
-      if (data) setMessages(data)
-    }
-
     fetchMessages()
 
     // Realtime listener

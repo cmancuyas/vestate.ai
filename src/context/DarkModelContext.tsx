@@ -17,7 +17,11 @@ export function DarkModeProvider({ children }: { children: React.ReactNode }) {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
     const shouldUseDark = storedTheme === 'dark' || (!storedTheme && prefersDark)
 
-    document.documentElement.classList.toggle('dark', shouldUseDark)
+    if (shouldUseDark) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
     setIsDarkMode(shouldUseDark)
   }, [])
 
@@ -25,7 +29,11 @@ export function DarkModeProvider({ children }: { children: React.ReactNode }) {
     const next = !isDarkMode
     setIsDarkMode(next)
     localStorage.setItem('theme', next ? 'dark' : 'light')
-    document.documentElement.classList.toggle('dark', next)
+    if (next) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
   }
 
   return (

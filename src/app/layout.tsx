@@ -23,6 +23,17 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
+        <head>
+          <title>Vestate.ai | Smarter Real Estate Platform</title>
+          <meta name="description" content="Discover, evaluate, and manage properties with AI-powered tools on Vestate.ai." />
+          <meta property="og:title" content="Vestate.ai" />
+          <meta property="og:description" content="Smarter real estate starts here. Find properties, estimate value, and more." />
+          <meta property="og:image" content="/logo.png" />
+          <meta property="og:url" content="https://vestate.ai" />
+          <meta name="twitter:card" content="summary_large_image" />
+          <link rel="icon" href="/favicon.ico" />
+        </head>
+    
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <DarkModeProvider>
           <ToastProvider>

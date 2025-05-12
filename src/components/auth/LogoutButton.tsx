@@ -1,8 +1,7 @@
 // src/components/auth/LogoutButton.tsx
 'use client'
-
-import { supabase } from '@/lib/supabaseClient'
 import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabaseClient'
 
 export default function LogoutButton() {
   const router = useRouter()
@@ -15,7 +14,7 @@ export default function LogoutButton() {
   return (
     <button
       onClick={handleLogout}
-      className="text-sm text-red-600 hover:underline"
+      className="text-sm text-red-600 hover:underline ml-4"
     >
       Logout
     </button>

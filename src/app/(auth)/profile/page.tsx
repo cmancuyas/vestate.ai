@@ -1,103 +1,104 @@
-// src/app/(auth)/profile/page.tsx
+
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
 
-export default function EditProfilePage() {
-  const [fullName, setFullName] = useState('')
+export default function ProfileSettingsPage() {
+  const [loading, setLoading] = useState(false)
   const [email, setEmail] = useState('')
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const router = useRouter()
+  const [role, setRole] = useState('')
+  const [region, setRegion] = useState('')
+  const [budgetMin, setBudgetMin] = useState('')
+  const [budgetMax, setBudgetMax] = useState('')
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const {
-        data: { user },
-        error: userError,
-      } = await supabase.auth.getUser()
-
-      if (!user || userError) {
-        router.push('/login')
-        return
-      }
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
 
       setEmail(user.email || '')
 
       const { data, error } = await supabase
         .from('profiles')
-        .select('full_name')
+        .select('role, region, budget_min, budget_max')
         .eq('id', user.id)
         .single()
 
-      if (!error && data) {
-        setFullName(data.full_name || '')
+      if (data) {
+        setRole(data.role || '')
+        setRegion(data.region || '')
+        setBudgetMin(data.budget_min || '')
+        setBudgetMax(data.budget_max || '')
       }
-
-      setLoading(false)
     }
 
     fetchProfile()
-  }, [router])
+  }, [])
 
-  const handleSave = async () => {
-    setSaving(true)
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
+    const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
 
-    const { error } = await supabase
+    await supabase
       .from('profiles')
-      .update({ full_name: fullName })
+      .update({
+        role,
+        region,
+        budget_min: budgetMin,
+        budget_max: budgetMax
+      })
       .eq('id', user.id)
 
-    setSaving(false)
-
-    if (!error) {
-      alert('Profile updated successfully!')
-    } else {
-      alert('Failed to update profile.')
-    }
+    setLoading(false)
+    alert('Profile updated!')
   }
 
-  if (loading) return <p className="p-6">Loading profile...</p>
-
   return (
-    <main className="p-8 max-w-xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Edit Profile</h1>
-
-      <div className="mb-4">
-        <label className="block mb-1 font-medium">Email</label>
-        <input
-          type="email"
-          value={email}
-          disabled
-          className="w-full border px-3 py-2 rounded bg-gray-100 text-gray-500"
-        />
-      </div>
-
-      <div className="mb-6">
-        <label className="block mb-1 font-medium">Full Name</label>
+    <div className="max-w-lg mx-auto mt-16 p-6 bg-white dark:bg-gray-900 rounded shadow text-gray-800 dark:text-white">
+      <h2 className="text-2xl font-bold mb-4">Profile Settings</h2>
+      <form onSubmit={handleUpdate} className="space-y-4">
+        <p>Email: {email}</p>
+        <select value={role} onChange={e => setRole(e.target.value)} className="w-full p-2 border rounded">
+          <option value="buyer">Buyer</option>
+          <option value="agent">Agent</option>
+          <option value="developer">Developer</option>
+          <option value="investor">Investor</option>
+        </select>
         <input
           type="text"
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
-          className="w-full border px-3 py-2 rounded"
+          value={region}
+          placeholder="Preferred Region"
+          onChange={e => setRegion(e.target.value)}
+          className="w-full p-2 border rounded"
         />
-      </div>
-
-      <button
-        onClick={handleSave}
-        disabled={saving}
-        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-      >
-        {saving ? 'Saving...' : 'Save Changes'}
-      </button>
-    </main>
+        <div className="flex gap-4">
+          <input
+            type="number"
+            value={budgetMin}
+            placeholder="Budget Min"
+            onChange={e => setBudgetMin(e.target.value)}
+            className="w-1/2 p-2 border rounded"
+          />
+          <input
+            type="number"
+            value={budgetMax}
+            placeholder="Budget Max"
+            onChange={e => setBudgetMax(e.target.value)}
+            className="w-1/2 p-2 border rounded"
+          />
+        </div>
+        <button
+          type="submit"
+          className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
+          disabled={loading}
+        >
+          {loading ? 'Saving…' : 'Save Changes'}
+        </button>
+      </form>
+    </div>
   )
 }

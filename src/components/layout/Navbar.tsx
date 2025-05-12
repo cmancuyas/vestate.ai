@@ -14,7 +14,7 @@ export default function Navbar() {
   const router = useRouter()
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    (async () => {
       const {
         data: { user },
       } = await supabase.auth.getUser()
@@ -30,18 +30,16 @@ export default function Navbar() {
       if (!error && data) {
         setFullName(data.full_name)
       }
-    }
-
-    fetchProfile()
+    })()
   }, [])
 
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMenuOpen(false)
-      }
+  const handleClickOutside = (e: MouseEvent) => {
+    if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+      setMenuOpen(false)
     }
+  }
 
+  useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])

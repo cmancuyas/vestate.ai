@@ -1,4 +1,4 @@
-// src/app/(auth)/check-new-user/page.tsx
+
 'use client'
 
 import { useEffect } from 'react'
@@ -10,26 +10,37 @@ export default function CheckNewUser() {
 
   useEffect(() => {
     const handleRedirect = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user }
+      } = await supabase.auth.getUser()
+
       if (!user) {
         router.push('/login')
         return
       }
 
-      // Check if profile exists
-      const { data, error } = await supabase
+      const { data: profile, error } = await supabase
         .from('profiles')
         .select('id')
         .eq('id', user.id)
         .single()
 
-      if (error || !data) {
-        // First-time user → onboarding
-        router.push('/auth/onboarding')
-      } else {
-        // Returning user → dashboard
-        router.push('/auth/dashboard')
+      if (error || !profile) {
+        // Create user profile
+        await supabase.from('profiles').insert([
+          {
+            id: user.id,
+            email: user.email,
+            full_name: user.user_metadata?.full_name || null,
+            avatar_url: user.user_metadata?.avatar_url || null,
+            role: user.user_metadata?.role || 'buyer',
+            is_subscribed: false,
+            is_premium: false
+          }
+        ])
       }
+
+      router.push('/dashboard')
     }
 
     handleRedirect()

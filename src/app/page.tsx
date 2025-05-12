@@ -1,107 +1,74 @@
-// src/app/page.tsx
+
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { Moon, Sun } from 'lucide-react'
-import FeatureCard from '@/components/ui/FeatureCard'
 import { useDarkMode } from '@/context/DarkModelContext'
+import { Button } from '@/components/ui/button'
+import { Moon, Sun, Home, DollarSign, Globe, MessageCircle } from 'lucide-react'
 
 export default function LandingPage() {
   const router = useRouter()
   const { isDarkMode, toggleDarkMode } = useDarkMode()
 
-  const featureCards = [
+  const features = [
     {
-      title: 'AI-Powered Property Analysis',
-      description: 'Evaluate properties instantly based on price trends, location, and ROI potential.',
-      image: '/images/landing/ai-powered-property-analysis.png',
+      title: 'Social Feed for Properties',
+      desc: 'Interact with real-time posts, comments, and listings from verified users.',
+      icon: <Home size={24} />
     },
     {
-      title: 'Real-Time Market Insights',
-      description: 'Track regional demand trends, hot zones, and investment signals.',
-      image: '/images/landing/real-time-market-insights.png',
+      title: 'AI Price Estimator',
+      desc: 'Get smart price recommendations based on local trends and comparisons.',
+      icon: <DollarSign size={24} />
     },
     {
-      title: 'Smart Buyer & Seller Matching',
-      description: 'AI-powered matching to connect buyers with ideal properties.',
-      image: '/images/landing/smart-buyer-and-seller-matching.png',
+      title: 'Foreclosure Sync',
+      desc: 'Automatically show newly listed Pag-IBIG and US bank-acquired assets.',
+      icon: <Globe size={24} />
     },
     {
-      title: 'Automated Valuation Tools',
-      description: 'No appraiser needed. Get instant AI valuations and pricing advice.',
-      image: '/images/landing/automated-evaluation-tools.png',
-    },
-    {
-      title: 'Local Data Integration',
-      description: 'Integrated Philippine datasets (Metro Manila, Tagaytay, etc).',
-      image: '/images/landing/location-data-integration.png',
-    },
-    {
-      title: 'Custom Alerts & Recommendations',
-      description: 'Be notified on price drops, hot leads, and neighborhood shifts.',
-      image: '/images/landing/custom-alert-and-recommendations.png',
-    },
+      title: 'Messaging & Docs',
+      desc: 'Communicate, share documents, and manage listings in-app.',
+      icon: <MessageCircle size={24} />
+    }
   ]
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-black dark:text-white transition-colors">
-      {/* Header */}
-      <header className="max-w-7xl mx-auto py-6 px-4 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-blue-600 dark:text-blue-400">Vestate.ai</h1>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => router.push('/login')}
-            className="px-4 py-2 text-sm font-medium bg-white/80 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-600 hover:text-white transition backdrop-blur-md shadow-sm"
-          >
-            Login
-          </button>
-          <button
-            onClick={() => router.push('/login')}
-            className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition shadow-md"
-          >
-            Sign Up
-          </button>
-          <button
-            onClick={toggleDarkMode}
-            className="p-2 rounded-md text-gray-500 dark:text-gray-300 hover:text-blue-600"
-            title="Toggle Dark Mode"
-          >
-            {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
-        </div>
-      </header>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-white">
+      <div className="flex justify-between items-center px-6 py-4">
+        <h1 className="text-2xl font-bold">Vestate.ai</h1>
+        <button onClick={toggleDarkMode}>
+          {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+        </button>
+      </div>
 
-      {/* Hero Section */}
-      <section
-        className="relative bg-cover bg-center text-white"
-        style={{
-          backgroundImage: "url('/images/landing-page.png')",
-          minHeight: '60vh',
-        }}
-      >
-        <div className="bg-black/50 backdrop-blur-sm w-full h-full flex flex-col items-center justify-center text-center px-4 py-20">
-          <h2 className="text-4xl sm:text-5xl font-bold leading-tight mb-4">
-            Smart Real Estate. <br className="hidden sm:block" /> Backed by AI.
-          </h2>
-          <p className="text-lg sm:text-xl max-w-2xl text-gray-200">
-            Empowering investors, buyers, and sellers with real-time insights and automation in the Philippine market.
-          </p>
+      <section className="text-center py-20 animate-fade-in px-6">
+        <h2 className="text-4xl font-bold mb-4">Smarter Real Estate Starts Here</h2>
+        <p className="text-lg mb-6 max-w-xl mx-auto">
+          Discover, evaluate, and manage properties with the power of AI, real-time insights,
+          and streamlined workflows.
+        </p>
+        <div className="flex justify-center gap-4">
+          <Button onClick={() => router.push('/login')}>Login</Button>
+          <Button variant="outline" onClick={() => router.push('/signup')}>Sign Up</Button>
         </div>
       </section>
 
-      {/* Features Grid */}
-      <section className="bg-black py-20 px-4">
-        <div className="max-w-6xl mx-auto grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {featureCards.map((card, i) => (
-            <FeatureCard key={i} {...card} />
-          ))}
-        </div>
+      <section className="animate-fade-in grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 max-w-4xl mx-auto px-6 pb-20">
+        {features.map((feat, idx) => (
+          <div key={idx} className="bg-white transform transition duration-300 hover:-translate-y-1 hover:shadow-lg dark:bg-gray-800 rounded-xl p-5 shadow flex items-start space-x-4">
+            <div className="text-blue-600 dark:text-blue-300">{feat.icon}</div>
+            <div>
+              <h3 className="font-semibold text-lg">{feat.title}</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">{feat.desc}</p>
+            </div>
+          </div>
+        ))}
       </section>
 
-      {/* Footer */}
-      <footer className="text-center pb-10 text-sm text-gray-500 dark:text-gray-400">
-        © {new Date().getFullYear()} Vestate.ai — All rights reserved.
+      <footer className="text-center animate-fade-in py-4 text-sm text-gray-500 dark:text-gray-400">
+        &copy; {new Date().getFullYear()} Vestate.ai — All rights reserved.
       </footer>
-    </main>
+    </div>
   )
 }

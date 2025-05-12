@@ -1,115 +1,81 @@
-// src/app/login/page.tsx
-'use client'
 
+'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
-import { Loader2, LogIn, UserPlus, Facebook } from 'lucide-react'
 
 export default function LoginPage() {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const [isSignUp, setIsSignUp] = useState(false)
-  const [errorMsg, setErrorMsg] = useState('')
 
-  const handleSubmit = async () => {
-    setErrorMsg('')
-    if (!email || !password) {
-      setErrorMsg('Email and password are required.')
-      return
-    }
-
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
     setLoading(true)
-    let response
-
-    if (isSignUp) {
-      response = await supabase.auth.signUp({ email, password })
-    } else {
-      response = await supabase.auth.signInWithPassword({ email, password })
-    }
-
-    const { error } = response
-    setLoading(false)
-
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) {
-      setErrorMsg(error.message)
+      alert(error.message)
     } else {
       router.push('/dashboard')
     }
+    setLoading(false)
   }
-
-const handleFacebookLogin = async () => {
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'facebook',
-    options: {
-      redirectTo: `${window.location.origin}/auth/check-new-user`
-    }
-  })
-
-  if (error) {
-    console.error('OAuth login error:', error)
-  }
-}
-
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="w-full max-w-md bg-white p-6 rounded-xl shadow space-y-5">
-        <h1 className="text-2xl font-bold text-center text-blue-600">
-          {isSignUp ? 'Sign Up' : 'Login'} to Vestate.ai
-        </h1>
-
-        {errorMsg && (
-          <div className="text-sm text-red-600 text-center bg-red-100 p-2 rounded">
-            {errorMsg}
-          </div>
-        )}
-
+    <div className="max-w-md mx-auto mt-20 p-6 bg-white rounded-lg shadow">
+      <h2 className="text-2xl font-bold mb-4">Login</h2>
+      <form onSubmit={handleLogin} className="space-y-4">
         <input
           type="email"
-          placeholder="Email"
-          className="w-full border p-2 rounded"
+          placeholder="Email address"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={e => setEmail(e.target.value)}
+          required
+          className="w-full p-2 border rounded"
         />
         <input
           type="password"
           placeholder="Password"
-          className="w-full border p-2 rounded"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={e => setPassword(e.target.value)}
+          required
+          className="w-full p-2 border rounded"
         />
-
         <button
-          onClick={handleSubmit}
+          type="submit"
+          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
           disabled={loading}
-          className="w-full bg-blue-600 text-white p-2 rounded flex justify-center items-center gap-2 hover:bg-blue-700"
         >
-          {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-          {isSignUp ? <UserPlus className="w-4 h-4" /> : <LogIn className="w-4 h-4" />}
-          {isSignUp ? 'Sign Up' : 'Login'}
+          {loading ? 'Logging in…' : 'Login'}
         </button>
+      </form>
 
-        <button
-          onClick={handleFacebookLogin}
-          className="w-full bg-blue-500 text-white p-2 rounded flex justify-center items-center gap-2 hover:bg-blue-600"
-        >
-          <Facebook className="w-4 h-4" />
-          Continue with Facebook
-        </button>
-
-        <p className="text-center text-sm">
-          {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
+        <div className="text-center space-y-2">
           <button
-            onClick={() => setIsSignUp(!isSignUp)}
-            className="text-blue-600 hover:underline font-medium"
+            onClick={() =>
+              supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: { redirectTo: `${window.location.origin}/dashboard` }
+              })
+            }
+            className="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700"
           >
-            {isSignUp ? 'Login here' : 'Sign up here'}
+            Continue with Google
           </button>
-        </p>
-      </div>
-    </main>
+          <button
+            onClick={() =>
+              supabase.auth.signInWithOAuth({
+                provider: 'facebook',
+                options: { redirectTo: `${window.location.origin}/dashboard` }
+              })
+            }
+            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+          >
+            Continue with Facebook
+          </button>
+        </div>
+
+    </div>
   )
 }
